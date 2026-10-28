@@ -247,7 +247,7 @@ export function parseCsv(text, source, minSpeed = DEFAULT_CSV_MIN_SPEED, options
 
 function parseJson(value, source, maxCidrSamples = DEFAULT_CIDR_SAMPLES) {
   const parsed = JSON.parse(value);
-  const items = Array.isArray(parsed) ? parsed : parsed.items || parsed.nodes || parsed.ips || [];
+  const items = Array.isArray(parsed) ? parsed : parsed.items || parsed.nodes || parsed.ips || parsed.data?.items || [];
   return items
     .flatMap((item) => {
       if (typeof item === "string") {

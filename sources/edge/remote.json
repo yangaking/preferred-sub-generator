@@ -12,6 +12,12 @@
     "cidrSamples": 8
   },
   {
+    "name": "vvhan-bestcfip",
+    "url": "https://api.4ce.cn/api/bestCFIP",
+    "type": "json",
+    "cfOnly": true
+  },
+  {
     "name": "cmliu-addressesapi",
     "url": "https://raw.githubusercontent.com/cmliu/WorkerVless2sub/main/addressesapi.txt",
     "type": "text"

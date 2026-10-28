@@ -74,6 +74,30 @@ test("collect candidates expands IPv6 CIDR from Cloudflare official source", asy
   assert.deepEqual(result.map((item) => item.source), ["cloudflare-official-v6", "cloudflare-official-v6", "cloudflare-official-v6", "cloudflare-official-v6"]);
 });
 
+test("collect vvhan data.items as candidates without trusting upstream measurements", async () => {
+  const result = await collectCandidatesWithHealth({
+    remoteSources: [{ name: "vvhan-bestcfip", url: "https://api.4ce.cn/api/bestCFIP", type: "json", cfOnly: true }],
+    fetchImpl: async () => Response.json({
+      success: true,
+      data: { items: [
+        { ip: "104.18.33.200", line: "CT", latency: 45, speed: 1, loss: 0 },
+        { ip: "172.67.66.105", line: "CU" },
+        { ip: "172.64.158.231", line: "CM" },
+        { ip: "172.64.229.247", line: "ALL" },
+        { ip: "2a06:98c1::1", line: "IPV6" },
+        { ip: "2a06:98c1::1", line: "IPV6" },
+        { ip: "8.8.8.8", line: "CT" },
+      ] },
+    }),
+  });
+
+  assert.deepEqual(result.candidates, [
+    "104.18.33.200", "172.67.66.105", "172.64.158.231", "172.64.229.247", "2a06:98c1::1",
+  ].map((address) => ({ address, port: null, source: "vvhan-bestcfip" })));
+  assert.equal(result.sourceHealth.find((item) => item.name === "vvhan-bestcfip").candidates, 7);
+  assert.equal(result.dropped.notCloudflare, 1);
+});
+
 test("collect candidates from CloudflareSpeedTest CSV source", async () => {
   const csv = [
     "IP地址,端口,回源端口,TLS,数据中心,地区,城市,TCP延迟(ms),速度(MB/s)",
